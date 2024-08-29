@@ -27,9 +27,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG')
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
+# Add Azure's domain to ALLOWED_HOSTS
+ALLOWED_HOSTS.append('.azurestaticapps.net')
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 def database_cred():
     
@@ -64,6 +67,7 @@ INSTALLED_APPS = [
     'vital_voices',
     'rest_framework',
     'corsheaders',
+    'mssql',
 ]
 
 MIDDLEWARE = [
@@ -167,6 +171,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ORIGIN_WHITELIST = [
-    'https://yellow-dune-0db69390f.5.azurestaticapps.net/',  # The address of your React frontend
-]
+# CORS_ORIGIN_WHITELIST = [
+#     'https://yellow-dune-0db69390f.5.azurestaticapps.net/',  # The address of your React frontend
+# ]
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
