@@ -1,0 +1,86 @@
+/* Navbar Customization */
+.navbar-custom {
+  background-color: #f8f4eb; /* Light beige background */
+  padding: 0.4rem 1rem;
+}
+
+.navbar-brand img {
+  max-height: 60px; /* Keep the logo height consistent */
+  height: auto; /* Maintain aspect ratio */
+  width: auto; /* Maintain aspect ratio */
+  margin-right: 20px; /* Add some spacing between the logo and links */
+}
+
+.navbar-nav .nav-link-custom ,
+.navbar-nav .dropdown-toggle {
+  color: #ff5a3c !important; /* Red-orange */
+  font-size: 1.1rem;
+  margin-left: 15px;
+  margin-right: 15px;
+  line-height: 60px; 
+}
+
+.navbar-nav .dropdown-item:hover,
+.navbar-nav .dropdown-toogle:hover
+ {
+  color: #f5a623 !important; /* Light orange on hover */
+  background-color: transparent; /* Keep the background transparent on hover */
+}
+
+.navbar-nav .dropdown-menu {
+  background-color: #f8f4eb; /* Light beige background */
+}
+ .navbar-nav .nav-link-custom:hover {
+  color: #f5a623 !important; /* Light orange on hover */
+}
+
+.styled-carousel img {
+  max-height: 750px; /* Adjust the height as needed */
+  width: 100%;       
+  object-fit: contain;  /* Ensure the image covers the area */
+}
+
+
+body {
+  background-color: #f8f4eb; /* Light beige background */
+  color: #2c2c2c; /* Dark gray text */
+}
+
+/* Content Alignment */
+.custom-container {
+  max-width: 90%; /* Adjust percentage to control width */
+  margin: 0 auto; /* Center the content */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c2c2c; /* Dark gray headings */
+}
+
+.lead, p {
+  color: #2c2c2c; /* Dark gray text */
+}
+
+hr {
+  border-color: #ff5a3c; /* Red-orange horizontal rule */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+.bg-primary {
+  background-color: #ff5a3c !important;
+  align-items: ; /* Using the red-orange color from your original CSS */
+}
+
+.bg-primary .btn-light {
+  color: #ff5a3c;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.bg-primary .btn-light:hover {
+  background-color: #f8f4eb;
+  color: #2c2c2c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
