@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'vital_voices',
     'rest_framework',
     'corsheaders',
+    'mssql',
 ]
 
 MIDDLEWARE = [
