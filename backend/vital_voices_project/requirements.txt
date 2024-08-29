@@ -1,6 +1,4 @@
 Django==4.2
-django-cors-headers==4.4.0
-django-pyodbc-azure==2.1.0.0
 djangorestframework==3.15.2
 pymssql==2.3.0
 pyodbc==5.1.0
