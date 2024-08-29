@@ -19,20 +19,33 @@ jobs:
         with:
           submodules: true
           lfs: false
+      
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Specify your Python version
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/vital_voices_project/requirements.txt
+      
+      - name: Run Django tests
+        run: |
+          cd backend/vital_voices_project
+          python manage.py test
+      
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_SAND_08D87A10F }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/backend/vital_voices_project" # App source code path
-          api_location: "backend/vital_voices_project/vital_voices_project" # Api source code path - optional
-          output_location: "" # Built app content directory - optional
-          app_build_command: "npm run build" # Add this line
-          ###### End of Repository/Build Configurations ######
+          app_location: "/backend/vital_voices_project"
+          api_location: "backend/vital_voices_project/vital_voices_project"
+          output_location: ""
+          # Remove the app_build_command as it's not needed for a Django backend
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -45,3 +58,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SALMON_SAND_08D87A10F }}
           action: "close"
+          
