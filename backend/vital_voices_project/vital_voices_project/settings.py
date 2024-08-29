@@ -189,4 +189,4 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_WHITELIST = [
     'https://yellow-dune-0db69390f.5.azurestaticapps.net',  # The address of your React frontend
 ]
->>>>>>> 2e20682e1b07ae4c74c09e8e33ffd454ca0493b6
+
