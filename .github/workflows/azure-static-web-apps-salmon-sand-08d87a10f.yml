@@ -31,6 +31,7 @@ jobs:
           app_location: "/backend/vital_voices_project" # App source code path
           api_location: "backend/vital_voices_project/vital_voices_project" # Api source code path - optional
           output_location: "" # Built app content directory - optional
+          app_build_command: "npm run build" # Add this line
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
