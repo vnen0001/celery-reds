@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-load_result = load_dotenv('vital_voices_project/cred.env')
+load_result = load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -165,12 +165,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Disable static files handling
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+<<<<<<< HEAD
 # CORS_ORIGIN_WHITELIST = [
 #     'https://yellow-dune-0db69390f.5.azurestaticapps.net/',  # The address of your React frontend
 # ]
@@ -179,3 +185,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+=======
+CORS_ORIGIN_WHITELIST = [
+    'https://yellow-dune-0db69390f.5.azurestaticapps.net',  # The address of your React frontend
+]
+>>>>>>> 2e20682e1b07ae4c74c09e8e33ffd454ca0493b6
