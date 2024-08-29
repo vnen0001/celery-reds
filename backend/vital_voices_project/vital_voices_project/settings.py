@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-load_result = load_dotenv('vital_voices_project/cred.env')
+load_result = load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -169,5 +169,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_WHITELIST = [
-    'https://yellow-dune-0db69390f.5.azurestaticapps.net/',  # The address of your React frontend
+    'https://yellow-dune-0db69390f.5.azurestaticapps.net',  # The address of your React frontend
 ]
