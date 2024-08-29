@@ -176,7 +176,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-<<<<<<< HEAD
+
 # CORS_ORIGIN_WHITELIST = [
 #     'https://yellow-dune-0db69390f.5.azurestaticapps.net/',  # The address of your React frontend
 # ]
