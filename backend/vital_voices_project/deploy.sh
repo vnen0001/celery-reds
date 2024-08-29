@@ -4,4 +4,7 @@ pip install -r requirements.txt
 python manage.py migrate
 
 # Start Gunicorn
-gunicorn your_project.wsgi
+echo Starting Gunicorn.
+exec gunicorn vital_voices_project.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers 3
