@@ -4,10 +4,23 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import connections
 from django.http import JsonResponse
+import random
 from django.views.decorators.http import require_http_methods
 import json
-
+from .powerball import simulate_and_return_lists
 # Create your views here.
+# class Password(APIView):
+#     def get(self,request,format=None):
+#         if request.method =='POST':
+#             data =  json.loads(request.body)
+#             password = data.get('password')
+#         if password == 'tp35fit5120':
+#             return JsonResponse({'status': 'success'}, status=200)
+#         else:
+#             return JsonResponse({'status': 'error', 'message': 'Incorrect password'}, status=400)
+    
+#         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
 class GraphData(APIView):
     def get(self,request,format=None):
         try:
@@ -90,3 +103,12 @@ ORDER BY
             return JsonResponse(data, safe=False)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        import random
+
+class PowerballSimulator_dj(APIView):
+    def get(self,request):
+        max_tickets = request.GET.get('max_tickets',1000)  # Default to 1000 if not provided
+        max_tickets = int(max_tickets)
+        tickets, losses ,avg= simulate_and_return_lists(max_tickets)
+        return JsonResponse({'tickets': tickets, 'losses': losses})
+
