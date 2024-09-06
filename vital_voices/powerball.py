@@ -1,8 +1,8 @@
 import random
 
 class PowerballSimulator:
-    random.seed(41)
-    def __init__(self):
+    def __init__(self, seed=41):
+        random.seed(seed)  # Set the seed here
         self.ticket_cost = 1.21  # Cost per ticket in dollars
         self.odds = {
             "Division 1": 134490400,
@@ -28,44 +28,69 @@ class PowerballSimulator:
         }
 
     def simulate_draw(self):
-        return random.random()  # Generate a random float between 0 and 1
+        main_numbers = random.sample(range(1, 36), 7)
+        powerball = random.randint(1, 20)
+        return main_numbers, powerball
 
-    def check_win(self, draw):
-        cumulative_odds = 0
-        for division, odds in self.odds.items():
-            cumulative_odds += 1 / odds
-            if draw <= cumulative_odds:
-                return division
+    def check_win(self, main_numbers, powerball, ticket_main, ticket_powerball):
+        matched_main = len(set(main_numbers) & set(ticket_main))
+        matched_powerball = (powerball == ticket_powerball)
+        
+        # Determine division
+        if matched_main == 7 and matched_powerball:
+            return "Division 1"
+        elif matched_main == 7:
+            return "Division 2"
+        elif matched_main == 6 and matched_powerball:
+            return "Division 3"
+        elif matched_main == 6:
+            return "Division 4"
+        elif matched_main == 5 and matched_powerball:
+            return "Division 5"
+        elif matched_main == 5:
+            return "Division 6"
+        elif matched_main == 4 and matched_powerball:
+            return "Division 7"
+        elif matched_main == 3 and matched_powerball:
+            return "Division 8"
+        elif matched_main == 2 and matched_powerball:
+            return "Division 9"
         return None
 
     def simulate_plays(self, num_tickets):
         total_cost = num_tickets * self.ticket_cost
         total_winnings = 0
         for _ in range(num_tickets):
-            draw = self.simulate_draw()
-            win = self.check_win(draw)
+            main_numbers, powerball = self.simulate_draw()
+            ticket_main = random.sample(range(1, 36), 7)
+            ticket_powerball = random.randint(1, 20)
+            win = self.check_win(main_numbers, powerball, ticket_main, ticket_powerball)
             if win:
                 total_winnings += self.prizes[win]
         net_result = total_winnings - total_cost
-        return net_result
+        return net_result, total_cost
 
 def simulate_and_return_lists(max_tickets):
-    simulator = PowerballSimulator()
-    max_tickets = max_tickets  # Simulate up to 1000 tickets
-    step = 10  # Increment by 10 tickets each time
+    simulator = PowerballSimulator()  # Seed is set in the class
+    step = 1  # Increment by 10 tickets each time
     
     tickets = list(range(step, max_tickets + step, step))
-    losses = []
+    cumulative_losses = []
+    cumulative_investments = []
+    
+    total_loss = 0
+    total_investment = 0
+    
     for num_tickets in tickets:
-        net_result = simulator.simulate_plays(num_tickets)
-        losses.append(-net_result)  # Convert net result to loss
-    # Calculate and print the average loss per ticket
-    avg_loss_per_ticket = losses[-1] / tickets[-1]
-    # Calculate and print the expected return
-    total_cost = tickets[-1] * simulator.ticket_cost
-    total_winnings = total_cost - losses[-1]
-    expected_return = (total_winnings / total_cost) * 100
-  
-    #loss =  100 - expected_return
-
-    return tickets, losses,avg_loss_per_ticket
+        net_result, total_cost = simulator.simulate_plays(num_tickets)
+        
+        # Update cumulative investment and loss
+        total_investment += total_cost
+        total_loss += -net_result
+        
+        cumulative_investments.append(total_investment)
+        cumulative_losses.append(total_loss)
+        
+    avg_loss_per_ticket = total_loss / tickets[-1]
+    
+    return tickets, cumulative_losses, cumulative_investments, avg_loss_per_ticket

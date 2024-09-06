@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-load_result = load_dotenv()
+load_result = load_dotenv('vital_voices_project/cred.env')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,14 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST')]
+CORS_ALLOW_ALL_ORIGINS = True 
 
-# Add Azure's domain to ALLOWED_HOSTS
 
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 def database_cred():
     
@@ -67,7 +65,6 @@ INSTALLED_APPS = [
     'vital_voices',
     'rest_framework',
     'corsheaders',
-    'mssql',
 ]
 
 MIDDLEWARE = [
@@ -165,28 +162,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Disable static files handling
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # CORS_ORIGIN_WHITELIST = [
-#     'https://yellow-dune-0db69390f.5.azurestaticapps.net/',  # The address of your React frontend
+#     'https://yellow-dune-0db69390f.5.azurestaticapps.net/',
+#       '*'  # The address of your React frontend
 # ]
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
-}
-
-CORS_ORIGIN_WHITELIST = [
-    'https://yellow-dune-0db69390f.5.azurestaticapps.net',  # The address of your React frontend
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://yellow-dune-0db69390f.5.azurestaticapps.net/"
 ]
-

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from rest_framework import status
 from django.db import connections
 from django.http import JsonResponse
@@ -8,46 +9,96 @@ import random
 from django.views.decorators.http import require_http_methods
 import json
 from .powerball import simulate_and_return_lists
-# Create your views here.
-# class Password(APIView):
-#     def get(self,request,format=None):
-#         if request.method =='POST':
-#             data =  json.loads(request.body)
-#             password = data.get('password')
-#         if password == 'tp35fit5120':
-#             return JsonResponse({'status': 'success'}, status=200)
-#         else:
-#             return JsonResponse({'status': 'error', 'message': 'Incorrect password'}, status=400)
+from dotenv import load_dotenv
+import os
+creds = load_dotenv()
+correct = os.environ.get('PASSWORD')
+@api_view(['POST'])
+def verify(request):
+    if request.method =='POST':
+        password = request.data.get('password')
+    if password == correct:
+        return JsonResponse({'status': 'success'}, status=200)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Incorrect password'}, status=400)
     
-#         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 class GraphData(APIView):
-    def get(self,request,format=None):
-        try:
-            with connections['default'].cursor() as cursor:
-                cursor.execute("""
-            SELECT Gender, Year, SUM(Suicide_Number) AS total
-            FROM dbo.suicide_number_data
-            GROUP BY Gender, Year
-            ORDER BY Year, Gender
-        """)
-                rows = cursor.fetchall()
+    @staticmethod
+    def process_suicide_data(rows, include_expenditure):
+        result = []
+        years = set()
         
-        # Define column names manually
-            data = {}
+        for row in rows:
+            year = row[1]  # Assuming Year is the second column
+            years.add(year)
+        
+        for year in sorted(years):
+            year_data = {
+                'year': str(year),
+                'Male': 0,
+                'Female': 0
+            }
+            if include_expenditure:
+                year_data['total_expenditure'] = 'N/A'
+            
             for row in rows:
-                year, gender, total = row
-                if year not in data:
-                    data[year] = {'year': year, 'Male': 0, 'Female': 0}
-                data[year][gender] = total
+                if row[1] == year:
+                    gender = row[0]
+                    suicide_number = row[2]
+                    year_data[gender] = suicide_number
+                    if include_expenditure and len(row) > 3:
+                        year_data['total_expenditure'] = row[3] if row[3] is not None else 'N/A'
+            
+            result.append(year_data)
+        return result
+    
+    def get(self,request,format=None):
+        
+        try:
+            include_expenditure = request.query_params.get('include_expenditure', 'false').lower() == 'true'
+            with connections['default'].cursor() as cursor:
+                if include_expenditure:
+                    cursor.execute("""
+                SELECT s.Gender, s.Year, SUM(s.Suicide_Number) AS total, t.Aust AS total_expenditure
+                    FROM dbo.suicide_number_data s
+                    LEFT JOIN (
+                        SELECT LEFT(Financial_Year, 4) AS Year, Aust
+                        FROM DBO.Total_expenditure
+                    ) t ON s.Year = t.Year
+                    GROUP BY s.Gender, s.Year, t.Aust
+                    ORDER BY s.Year, s.Gender
+            """)
+                    
+                else:
+                     cursor.execute("""
+                    SELECT Gender, Year, SUM(Suicide_Number) AS total
+                    FROM dbo.suicide_number_data
+                    GROUP BY Gender, Year
+                    ORDER BY Year, Gender
+                """)
+                rows = cursor.fetchall()
+            
+        # Define column names manually
+            # data = {}
+            # for row in rows:
+            #     year, gender, total,gambling_exp = row
+            #     if year not in data:
+            #         data[year] = {'year': year, 'Male': 0, 'Female': 0,'gambling_exp':gambling_exp if gambling_exp is not None else 'N/A'}
+            #     data[year][gender] = total
 
-            # Convert the dictionary to a list for JSON serialization
-            result = list(data.values())
+            # # Convert the dictionary to a list for JSON serialization
+            # result = list(data.values())
 
-            return JsonResponse(result, safe=False)
+            processed_data = self.process_suicide_data(rows, include_expenditure)
+            return JsonResponse(processed_data, safe=False)
     
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+ 
+    
 class SpiderData(APIView):
     def get(self,request,format=None):
         try:
@@ -103,7 +154,7 @@ ORDER BY
             return JsonResponse(data, safe=False)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        import random
+       
 
 class PowerballSimulator_dj(APIView):
     def get(self,request):
@@ -111,4 +162,28 @@ class PowerballSimulator_dj(APIView):
         max_tickets = int(max_tickets)
         tickets, losses ,avg= simulate_and_return_lists(max_tickets)
         return JsonResponse({'tickets': tickets, 'losses': losses})
+    
+class ParallelCoordinates(APIView):
+    def get(self,request):
+        try:
+            with connections['default'].cursor() as cursor:
+                cursor.execute("select * from [dbo].[Different_games_expenditure]")
+                rows = cursor.fetchall()
+                data = []
+                for row in rows:
+                    data.append({
+                        'Year':row[0],
+                        'Casino':row[1],
+                        'Gaming_machine':row[2],
+                        'Interactive_gaming':row[3],
+                        'Keno':row[4],
+                        'Lotteries':row[5],
+                        'Minor_gaming':row[6],
+                        'Wagering':row[7],
+                        'Total':row[8]
 
+                    })
+
+            return JsonResponse(data, safe=False)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
