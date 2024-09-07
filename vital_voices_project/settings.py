@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 DEBUG = os.environ.get('DJANGO_DEBUG')
 
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST'),'backfinal-atcwbpa6epdkd5e8.eastus-01.azurewebsites.net']
-CORS_ALLOW_ALL_ORIGINS = True 
+
 
 
 
