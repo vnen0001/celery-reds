@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-load_result = load_dotenv('vital_voices_project/cred.env')
+load_result = load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG')
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST'),'backfinal-atcwbpa6epdkd5e8.eastus-01.azurewebsites.net']
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
 
 
@@ -173,7 +173,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #       '*'  # The address of your React frontend
 # ]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://yellow-dune-0db69390f.5.azurestaticapps.net/"
+    # "http://localhost:3000",
+    # "http://127.0.0.1:3000",
+    "https://yellow-dune-0db69390f.5.azurestaticapps.net/",
+    "https://vitalvoices.live"
 ]
