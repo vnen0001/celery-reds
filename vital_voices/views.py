@@ -48,7 +48,7 @@ class GraphData(APIView):
         try:
             include_expenditure = request.query_params.get('include_expenditure', 'false').lower() == 'true'
             task = process_suicide_data.delay(include_expenditure)
-            result = AsyncResult(task.id).get(timeout=60)  # 60 seconds timeout
+            result = AsyncResult(task.id).get()  # 60 seconds timeout
             return JsonResponse(result, safe=False)
         except AsyncResult.TimeoutError:
             return Response({"error": "Processing is taking longer than expected. Please try again later."},
@@ -79,7 +79,7 @@ class ParallelCoordinates(APIView):
     def get(self, request):
         try:
             task = fetch_parallel_coordinates_data.delay()
-            result = AsyncResult(task.id).get(timeout=30)  # 30 seconds timeout
+            result = AsyncResult(task.id).get()  # 30 seconds timeout
             return JsonResponse(result, safe=False)
         except AsyncResult.TimeoutError:
             return Response({"error": "Processing is taking longer than expected. Please try again later."},

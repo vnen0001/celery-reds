@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # load_result = load_dotenv(env_path)
 # print(f"Attempted to load .env file from: {env_path}")
 # print(f"Load dotenv result: {load_result}")
-load_dotenv()
+load_dotenv('vital_voices_project/cred.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.environ.get('DJANGO_DEBUG')
+DEBUG = True#os.environ.get('DJANGO_DEBUG')
 
 ALLOWED_HOSTS = ['*']
 if DEBUG ==True:
@@ -53,6 +53,7 @@ def database_cred():
   # Debug print
     return creds
 print(DEBUG)
+print(database_cred())
 
 # Application definition
 
@@ -63,7 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'vital_voices_app',
+    'vital_voices',
     'rest_framework',
     'corsheaders',
     'django_redis',
@@ -80,7 +81,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'azure_backend.urls'
+ROOT_URLCONF = 'vital_voices_project.urls'
 
 TEMPLATES = [
     {
@@ -98,7 +99,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'azure_backend.wsgi.application'
+WSGI_APPLICATION = 'vital_voices_project.wsgi.application'
 
 
 # Database
@@ -201,4 +202,27 @@ CACHES = {
         }
     }
 }
+
+
+from django.db import connections
+from django.db.utils import OperationalError
+from redis import Redis
+
+def test_connections():
+    # Test database connection
+    try:
+        connections['default'].cursor()
+        print("Database connection successful")
+    except OperationalError:
+        print("Database connection failed")
+
+    # Test Redis connection
+    try:
+        r = Redis(host=REDIS_HOST, port=REDIS_PORT)
+        r.ping()
+        print("Redis connection successful")
+    except Exception as e:
+        print(f"Redis connection failed: {str(e)}")
+
+test_connections()
 
