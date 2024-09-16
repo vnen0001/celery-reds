@@ -6,3 +6,10 @@ gunicorn>=20.1.0
 python-dotenv
 django-cors-headers
 mssql-django
+jwt
+celery==5.3.6
+redis==5.0.1
+psycopg2-binary==2.9.9
+whitenoise==6.6.0
+azure-cognitiveservices-speech
+django-redis==5.4.0
