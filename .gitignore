@@ -1,0 +1,7 @@
+*.env
+*.log
+*.pid
+*.zip
+*.rdb
+*.sqlite3
+django-back/
