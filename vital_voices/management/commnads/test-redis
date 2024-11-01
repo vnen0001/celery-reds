@@ -1,0 +1,19 @@
+from django.core.management.base import BaseCommand
+from django.conf import settings
+import redis
+
+class Command(BaseCommand):
+    help = 'Tests the Redis connection'
+
+    def handle(self, *args, **options):
+        self.stdout.write(f"REDIS_HOST: {settings.REDIS_HOST}")
+        self.stdout.write(f"REDIS_PORT: {settings.REDIS_PORT}")
+        
+        try:
+            r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, socket_timeout=5)
+            r.ping()
+            self.stdout.write(self.style.SUCCESS("Successfully connected to Redis"))
+        except redis.ConnectionError as e:
+            self.stdout.write(self.style.ERROR(f"Failed to connect to Redis: {str(e)}"))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f"An unexpected error occurred: {str(e)}"))
