@@ -31,14 +31,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True#os.environ.get('DJANGO_DEBUG')
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-if DEBUG ==True:
-    ALLOWED_HOSTS=['localhost','127.0.0.1']
-else:
-    ALLOWED_HOSTS=['https://vitalvoices.live',"https://yellow-dune-0db69390f.5.azurestaticapps.net"]
-
+ALLOWED_HOSTS = ['207.211.150.81', 'backendtp35-dhayb3brbhdgeraq.australiaeast-01.azurewebsites.net','vitalvoices.live','https://calm-ground-0bd850b00.5.azurestaticapps.net','localhost'] 
 def database_cred():
     
     print(f"Load dotenv result")  # Debug print
@@ -52,8 +47,7 @@ def database_cred():
     }
   # Debug print
     return creds
-print(DEBUG)
-print(database_cred())
+
 
 # Application definition
 
@@ -117,7 +111,7 @@ if all(credentials.values()):
             'OPTIONS': {
                 'driver': 'ODBC Driver 18 for SQL Server',
                 'encrypt': 'yes',
-                'trustServerCertificate': 'no'
+                'trustServerCertificate': 'yes'
             },
         }
     }
@@ -181,32 +175,70 @@ CORS_ALLOWED_ORIGINS = [
      "http://localhost:5173",
      "https://20.55.67.148",
     "https://yellow-dune-0db69390f.5.azurestaticapps.net",
-    "https://vitalvoices.live"
+    "https://vitalvoices.live",
+    "https://calm-ground-0bd850b00.5.azurestaticapps.net"
+
 ]
+
 REDIS_HOST = os.environ.get('REDIS_SERVER')  # Replace with your VM's IP address
 REDIS_PORT = os.environ.get("REDIS_PORT")
+REDIS_PASS = os.environ.get('DB_PASSWORD')
 
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+from urllib.parse import quote_plus
+from redis import Redis
+from django_redis import get_redis_connection
+REDIS_DB = '0' 
+REDIS_URL = f"redis://:{quote_plus(REDIS_PASS)}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+
+# Celery Configuration
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
+# Django Cache Configuration
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/1",
+        "LOCATION": REDIS_URL.replace(f"/{REDIS_DB}", "/1"),  # Use DB 1 for cache
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "PASSWORD": REDIS_PASS
         }
     }
 }
 
 
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django_error.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+
+def get_redis_conn():
+    return get_redis_connection("default")
+
 from django.db import connections
 from django.db.utils import OperationalError
-from redis import Redis
+
 
 def test_connections():
     # Test database connection
@@ -218,8 +250,8 @@ def test_connections():
 
     # Test Redis connection
     try:
-        r = Redis(host=REDIS_HOST, port=REDIS_PORT)
-        r.ping()
+        redis_client = Redis.from_url(REDIS_URL)
+        redis_client.ping()
         print("Redis connection successful")
     except Exception as e:
         print(f"Redis connection failed: {str(e)}")
